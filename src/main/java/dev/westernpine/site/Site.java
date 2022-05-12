@@ -165,14 +165,15 @@ public class Site {
         Service http = Service.ignite();
         http.port(80);
         http.before((request, response) -> response.redirect("https://" + (request.url().startsWith("http://") ? request.url().split("http://")[1] : request.url()), 301));
+        http.init();
     }
 
     public static void initRoutes() {
         notFound(new NotFound());
         internalServerError(new InternalServerError());
         post("/webhooks/stripe", new StripeWebhook());
-        get("/", (request, response) -> {response.redirect("/invite"); return null;});
-        get("/invite", (request, response) -> {response.redirect("https://discord.com/oauth2/authorize?client_id=941560606102806558&permissions=8&scope=applications.commands%20bot"); return null;});
+        get("/", (request, response) -> {response.redirect("/invite", 200); return null;});
+        get("/invite", (request, response) -> {response.redirect("https://discord.com/oauth2/authorize?client_id=941560606102806558&permissions=8&scope=applications.commands%20bot", 200); return null;});
 
 
     }
