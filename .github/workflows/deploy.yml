@@ -1,0 +1,27 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: asylum
+
+    steps:
+      - name: Checkout code.
+        uses: actions/checkout@v2
+
+      - name: Maven clean install
+        run: mvn clean install --file pom.xml
+          
+      - name: Stop the site.
+        run: sudo screen -XS site quit
+
+      - name: Replace jar.
+        run: sudo cp ./target/Site.jar /home/pulse/site/Site.jar
+
+      - name: Start site.
+        run: cd /home/pulse/site && sudo screen -S site -dm ./start.sh
