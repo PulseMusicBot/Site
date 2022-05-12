@@ -42,9 +42,14 @@ public class StripeWebhook implements Route {
         else
             throw new RuntimeException("Failed to deserialize any object from the json data!");
 
+        System.out.println(event.getType());
+
         if(event.getType().startsWith("customer.subscription")) {
             Subscription subscription = (Subscription) stripeObject;
-            Site.clientManager.getByCustomer(subscription.getCustomer()).onSuccess(client -> Site.manager.updatePremium(client.getUserId(), client.setPremiumStatus(Client.Status.fromStripeStatus(subscription.getStatus())).isActive()));
+            Site.clientManager.getByCustomer(subscription.getCustomer())
+                    .onSuccess(client -> Site.manager.updatePremium(client.getUserId(), client.setPremiumStatus(Client.Status.fromStripeStatus(subscription.getStatus())).isActive()))
+//                    .onFailure(throwable -> System.out.println("An error occurred with subscription: " + subscription.toJson()))
+            ;
         }
 
         response.status(200);
